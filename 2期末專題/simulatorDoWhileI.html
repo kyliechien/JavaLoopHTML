@@ -1,0 +1,311 @@
+<html>
+<script>
+var flowWord = ['印出','判斷式內部為'];
+var currentStep = 0;
+var prevStep = -1;
+var turn = 1;
+var explain = ['step_result','step_one'];
+var code = ['code_result','code_one'];
+var sum = 0;
+var tid;
+var choose;
+function flow(){
+	var c = document.getElementById("cs1");
+    ctx = c.getContext("2d");
+    ctx.scale(2,2);
+    ctx.font = "8px Arial";
+    ctx.textAlign = 'center';
+
+    ctx.beginPath();
+    ctx.moveTo(75, 10);
+    ctx.lineTo(75, 20);
+    ctx.stroke();
+    ctx.closePath();
+   for(var i=0; i<2; i++){
+        ctx.beginPath();
+        ctx.moveTo(75, 35+i*25);
+        ctx.lineTo(75, 45+i*25);
+        ctx.stroke();
+        ctx.closePath();
+		if(i == 1){
+			ctx.beginPath();
+			ctx.moveTo(75, 45 + (i-1)*25);
+			ctx.lineTo(130, 52.5 + (i-1)*25);
+			ctx.lineTo(75, 60 + (i-1)*25);
+			ctx.lineTo(20, 52.5 + (i-1)*25);
+			ctx.closePath();
+			ctx.stroke();
+			
+			ctx.beginPath();
+			ctx.moveTo(20, 52.5 + (i-1)*25);
+			ctx.lineTo(0, 52.5 + (i-1)*25);
+			ctx.lineTo(0, 12.5);
+			ctx.lineTo(75, 12.5);
+			ctx.stroke();
+			ctx.closePath();
+			ctx.fillText("true", 20, 50 + (i-1)*25);
+			ctx.fillText(flowWord[i], 75, 30+i*25);
+		  }
+		
+		else{
+		  ctx.strokeRect(10, 20+i*25, 130, 15);
+          ctx.fillText(flowWord[i] + document.getElementById('code_out').value, 75, 30+i*25);
+		}
+    }
+}
+function showStep(pre,curr){
+	if(pre != -1){
+		document.getElementById(explain[pre]).style.background="";
+		document.getElementById(code[pre]).style.background="";
+		clearColor(pre);
+	}
+	if(curr!=-1){
+		document.getElementById(explain[curr]).style.background="#FCEA96";
+		document.getElementById(code[curr]).style.background="#FCEA96";
+		drawColor(curr);
+	}
+	
+	
+}
+
+function drawColor(n){
+		if(n == 1){
+		ctx.fillStyle = "#FCEA96";
+		ctx.beginPath();
+        ctx.moveTo(75, 45 + (n-1)*25);
+        ctx.lineTo(130, 52.5 + (n-1)*25);
+        ctx.lineTo(75, 60 + (n-1)*25);
+        ctx.lineTo(20, 52.5 + (n-1)*25);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.fill();
+		ctx.fillStyle = "black";
+        ctx.fillText(flowWord[n], 75, 30+n*25);
+	}
+	else{
+		ctx.fillStyle = "#FCEA96";
+		ctx.fillRect(11,21+(n)*25,128,13);
+		ctx.fillStyle = "black";
+		ctx.fillText(flowWord[n] + document.getElementById('code_out').value, 75,30+(n)*25);
+	}
+}
+function clearColor(n){
+	if(n == 1){
+		ctx.fillStyle = "#FFFFFF";
+		ctx.beginPath();
+        ctx.moveTo(75, 45 + (n-1)*25);
+        ctx.lineTo(130, 52.5 + (n-1)*25);
+        ctx.lineTo(75, 60 + (n-1)*25);
+        ctx.lineTo(20, 52.5 + (n-1)*25);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.fill();
+		ctx.fillStyle = "black";
+        ctx.fillText(flowWord[n], 75, 30+n*25);
+	}
+	else{
+		ctx.clearRect(11,21+(n)*25,128,13);
+		ctx.fillText(flowWord[n] + document.getElementById('code_out').value, 75, 30+(n)*25);
+	}
+}
+
+function processCode(){
+	if(document.getElementById('code_out').value == ""){
+		alert("請輸入一個字串");
+	}
+	else{
+		document.getElementById('step_out').innerHTML = document.getElementById('code_out').value;
+		flow();
+		document.getElementById('genButton').disabled = true;
+		document.getElementById('nextButton').disabled = false;
+		document.getElementById('autoButton').disabled = false;
+		document.getElementById('runButton').disabled = false;
+		document.getElementById('genButton').style = "display:none;";
+		document.getElementById('nextButton').style = "display:inline-block;";
+		document.getElementById('autoButton').style = "display:inline-block;";
+		document.getElementById('runButton').style = "display:inline-block;";
+	}
+		
+}
+
+function callshow(){
+	if(currentStep==code.length){
+		showStep(prevStep,-1);
+		//resettimer();
+		document.getElementById('nextButton').disabled = true;
+		document.getElementById('autoButton').disabled = true;
+		document.getElementById('runButton').disabled = true;
+		document.getElementById('reloadButton').disabled = false;
+		document.getElementById('reloadButton').style = "display:inline-block;";
+		document.getElementById('nextButton').style = "display:none;";
+		document.getElementById('autoButton').style = "display:none;";
+		document.getElementById('runButton').style = "display:none;";
+	}
+	else{
+		showStep(prevStep,currentStep);
+	}
+	
+	if(currentStep<code.length){
+		prevStep = currentStep;
+		if(currentStep == 1){
+			if(turn != 5){  //示範
+				turn++;
+				currentStep = 0;
+			}
+			else{
+				showStep(prevStep,-1);
+				document.getElementById('text').value = document.getElementById('text').value + "\n(...無數個"+ document.getElementById('code_out').value + ")";
+				document.getElementById('nextButton').disabled = true;
+				document.getElementById('autoButton').disabled = true;
+				document.getElementById('runButton').disabled = true;
+				document.getElementById('reloadButton').disabled = false;
+				document.getElementById('reloadButton').style = "display:inline-block;";
+				document.getElementById('nextButton').style = "display:none;";
+				document.getElementById('autoButton').style = "display:none;";
+				document.getElementById('runButton').style = "display:none;";
+				resettimer();
+			}
+		}
+		else{
+			currentStep++;
+			document.getElementById('text').value = document.getElementById('text').value + "\n"+ document.getElementById('code_out').value;
+		}
+	}
+}
+function start(spe){
+	tid = window.setInterval("callshow();",spe);
+	document.getElementById('autoButton').disabled = true;
+}
+
+function resettimer(){
+	window.clearInterval(tid);
+}
+
+function runALL(){
+	resettimer();
+	showStep(prevStep,-1);
+	document.getElementById('reloadButton').style = "display:inline-block;";
+	document.getElementById('nextButton').style = "display:none;";
+	document.getElementById('autoButton').style = "display:none;";
+	document.getElementById('runButton').style = "display:none;";
+	var i = 1;
+	do{
+	document.getElementById('text').value = document.getElementById('text').value + "\n" + document.getElementById('code_out').value;
+	i++;
+	}while( i <= 5);
+	document.getElementById('text').value = document.getElementById('text').value + "\n(...無數個"+ document.getElementById('code_out').value + ")";
+}
+</script>
+<head>
+<script src="js/popper.min.js"></script>
+ <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>do while迴圈infinite loop模擬</title> 
+	<!--Bootstrap 核心CSS 檔案-->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"> 
+	<!--自行定義css-->
+	<link rel="stylesheet" href="css/main2.css">
+	<!--** 請增加css檔：css/main.css -->
+	<link rel="stylesheet">
+	<!--jQuery 核心JavaScript 檔案-->
+	<script src="js/jquery-3.4.1.min.js"></script>
+	<!--Bootstrap 核心JavaScript 檔案-->
+	<script src="bootstrap/js/bootstrap.min.js"></script>	
+</head>
+<body align=center>
+<nav class="navbar navbar-expand-lg navbar-light" style="background:#5288ac">
+	  <a class="navbar-brand" href="#" style="color:white">do while模擬</a>
+	  <button class="navbar-toggler border-light bg-light" type="button" 
+	          data-toggle="collapse" data-target="#navbarNavDropdown" 
+	          aria-controls="navbarNavDropdown" aria-expanded="false" 
+			  aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+		<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorDoWhileG.html" style="color:white">general loop</a>
+		  </li>		  
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorDoWhileNest.html" style="color:white">nested loop</a>
+		  </li>
+		  <li class="nav-item active">
+			<a class="nav-link" href="simulatorDoWhileI.html">infinite loop<span class="sr-only">(current)</span></a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorDoWhileC.html" style="color:white">loop+continue</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorDoWhileB.html" style="color:white">loop+break</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorDoWhileN.html" style="color:white">null loop</a>
+		  </li>	
+		  <li class="nav-item">
+			<a class="nav-link" href="main.html" style="color:white">回首頁</a>
+		  </li>	
+		</ul>				
+	  </div>
+</nav>
+<div class="container pt-4">
+	<div class="row">
+
+	<div class="card col-12 col-sm-12 col-xl-4 pt-3 pb-4">
+		<div class = "card-header bg-basic text-center">
+			<h3>程式碼講解</h3>
+		</div>
+		<div class = "card-body">
+			<hr>do while迴圈開始，依照do的特性，第一次直接執行body<br><hr>
+			<span id='step_result'>輸出一個<span id='step_out'>??</span></span><br>
+			<span id='step_one'>判斷式內部為true，繼續執行body</span>
+			<hr>do while迴圈結束<hr>
+			
+		</div>
+	</div>	
+	<div class="card col-12 col-sm-12 col-xl-4 pt-3 pb-4" >
+		<div class = "card-header bg-basic text-center">
+			<h3>Code</h3>
+		</div>
+		<div class = "card-body">
+			do{<br>
+			<span id='code_result'>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("<input type=text style="width:60px;text-align:center;" id='code_out'>");<br></span>
+			<span id='code_one'>}while(true);<br></span>
+			<hr>
+			輸出視窗<br>
+			<textarea readonly="readonly"  id='text' style="width:300px;height:250px;"></textarea>
+		</div>
+	</div>
+	<div class="card col-12 col-sm-12 col-xl-4 pt-3 pb-4">
+		<div class = "card-header bg-basic text-center">
+			<h3>流程圖</h3>
+		</div>
+		<div class = "card-body">
+			<canvas id="cs1" width=400 height=400></canvas>
+		</div>
+	</div>
+</div>
+</div>
+<div align=center class="py-3">
+	<button type="button" class="btn btn-primary" onclick="processCode();" id='genButton'>產生</button>
+	<button type="button" class="btn btn-light" onclick="callshow();resettimer();document.getElementById('autoButton').disabled = false;" id='nextButton' disabled style = "display:none;">下一步</button>
+	<div class="dropdown" style="display:inline;">
+    <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" id='autoButton' disabled style = "display:none;">
+      自動播放
+    </button>
+    <div class="dropdown-menu">
+      <a class="dropdown-item" onclick="start(1500);" target="_blank">慢</a>
+      <a class="dropdown-item" onclick="start(1000);" target="_blank">正常</a>
+      <a class="dropdown-item" onclick="start(500);" target="_blank">快</a>
+    </div>
+   </div>
+	<button type="button" class="btn btn-light" onclick="runALL();" id='runButton' disabled style = "display:none;">全部執行</button>
+	<button type="button" class="btn btn-primary" onclick="javascript:window.location.reload()" id='reloadButton' style="display:none;">重置</button><br>
+	
+   </div>
+</div>
+ <div class="go-top">
+    <a href="#">返回<br>頂部</a>
+  </div>
+</body>
+</html>

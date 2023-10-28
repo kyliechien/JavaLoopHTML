@@ -1,0 +1,345 @@
+<html>
+<script>
+var flowWord = ['宣告一整數sum = 0','int i = 1','如果i <= ','i++',  '印出sum值' ];
+var currentStep = 0;
+var prevStep = -1;
+var turn = 1;
+var explain = ['declare_sum','step_one','step_two','step_three','step_result'];
+var code = ['code_sum','code_one','code_two','code_three','code_result'];
+var sum = 0;
+var tid;
+var choose;
+function flow(num1){
+	var c = document.getElementById("cs1");
+    ctx = c.getContext("2d");
+    ctx.scale(2,2);
+    ctx.font = "8px Arial";
+    ctx.textAlign = 'center';
+
+    ctx.beginPath();
+    ctx.moveTo(75, 10);
+    ctx.lineTo(75, 20);
+    ctx.stroke();
+    ctx.closePath();
+   for(var i=0; i<5; i++){
+        ctx.beginPath();
+        ctx.moveTo(75, 35+i*25);
+        ctx.lineTo(75, 45+i*25);
+        ctx.stroke();
+        ctx.closePath();
+		 if(i == 2){
+			ctx.beginPath();
+			ctx.moveTo(75, 45 + (i-1)*25);
+			ctx.lineTo(130, 52.5 + (i-1)*25);
+			ctx.lineTo(75, 60 + (i-1)*25);
+			ctx.lineTo(20, 52.5 + (i-1)*25);
+			ctx.closePath();
+			ctx.stroke();
+			ctx.fillText(flowWord[i]+num1, 75, 30+i*25);
+		  
+			ctx.beginPath();
+			ctx.moveTo(130, 52.5 + (i-1)*25);
+			ctx.lineTo(145, 52.5 + (i-1)*25);
+			ctx.lineTo(145, 90 + (i-1)*25);
+			ctx.lineTo(75, 90 + (i-1)*25);
+			ctx.stroke();
+			ctx.closePath();
+			ctx.fillText("false", 130, 50 + (i-1)*25);
+			ctx.fillText("true", 87, 67 + (i-1)*25);
+		}
+		else{
+		  ctx.strokeRect(10, 20+(i)*25, 130, 15);
+          ctx.fillText(flowWord[i], 75, 30+(i)*25);
+		  if(i == 3){
+			ctx.beginPath();
+			ctx.moveTo(10,102.5);
+			ctx.lineTo(5,102.5);
+			ctx.lineTo(5,65.5);
+			ctx.lineTo(75,65.5);
+			ctx.stroke();
+			ctx.closePath();
+		  }
+		}
+	}
+}
+function showStep(pre,curr){
+	if(pre != -1){
+		document.getElementById(explain[pre]).style.background="";
+		document.getElementById(code[pre]).style.background="";
+		clearColor(pre);
+	}
+	if(curr!=-1){
+		document.getElementById(explain[curr]).style.background="#FCEA96";
+		document.getElementById(code[curr]).style.background="#FCEA96";
+		drawColor(curr);
+	}
+	
+	
+}
+
+function drawColor(n){
+	if(n == 2){
+		var num = document.getElementById('code_number').value;
+		ctx.fillStyle = "#FCEA96";
+		ctx.beginPath();
+        ctx.moveTo(75, 45 + (n-1)*25);
+        ctx.lineTo(130, 52.5 + (n-1)*25);
+        ctx.lineTo(75, 60 + (n-1)*25);
+        ctx.lineTo(20, 52.5 + (n-1)*25);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.fill();
+		ctx.fillStyle = "black";
+		ctx.fillText(flowWord[n]+num, 75, 30+n*25);
+		}
+	else {
+		ctx.fillStyle = "#FCEA96";
+		ctx.fillRect(11,21+(n)*25,128,13);
+		ctx.fillStyle = "black";
+		ctx.fillText(flowWord[n], 75,30+(n)*25);
+		}
+}
+function clearColor(n){
+	if(n == 2){
+		var num = document.getElementById('code_number').value;
+		ctx.fillStyle = "#FFFFFF";
+		ctx.beginPath();
+        ctx.moveTo(75, 45 + (n-1)*25);
+        ctx.lineTo(130, 52.5 + (n-1)*25);
+        ctx.lineTo(75, 60 + (n-1)*25);
+        ctx.lineTo(20, 52.5 + (n-1)*25);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.fill();
+		ctx.fillStyle = "black";
+		ctx.fillText(flowWord[n]+num, 75, 30+n*25);
+	}
+	else{
+		ctx.clearRect(11,21+(n)*25,128,13);
+		ctx.fillText(flowWord[n], 75, 30+(n)*25);
+	}
+}
+
+function processCode(){
+	var decideWhile = document.getElementById('code_number').value;
+
+	if(decideWhile == ""){
+		alert('請輸入for的判斷式');
+	}
+	else if(1 > parseInt(decideWhile)){
+		alert('for的判斷式請>=1');
+		document.getElementById('code_number').value = "";
+	}
+	else{
+		document.getElementById('step_number').innerHTML = decideWhile;
+		document.getElementById('code_number').disabled = true;
+		flow(decideWhile);
+		document.getElementById('genButton').disabled = true;
+		document.getElementById('nextButton').disabled = false;
+		document.getElementById('autoButton').disabled = false;
+		document.getElementById('runButton').disabled = false;
+		document.getElementById('genButton').style = "display:none;";
+		document.getElementById('nextButton').style = "display:inline-block;";
+		document.getElementById('autoButton').style = "display:inline-block;";
+		document.getElementById('runButton').style = "display:inline-block;";
+	}
+}
+
+function callshow(){
+	var num = parseInt(document.getElementById('code_number').value);
+	if(currentStep==code.length){
+		showStep(prevStep,-1);
+		document.getElementById('text').value = "The sum value is: " + sum;
+		//resettimer();
+		document.getElementById('nextButton').disabled = true;
+		document.getElementById('autoButton').disabled = true;
+		document.getElementById('runButton').disabled = true;
+		document.getElementById('reloadButton').disabled = false;
+		document.getElementById('reloadButton').style = "display:inline-block;";
+		document.getElementById('nextButton').style = "display:none;";
+		document.getElementById('autoButton').style = "display:none;";
+		document.getElementById('runButton').style = "display:none;";
+	}
+	else{
+		showStep(prevStep,currentStep);
+	}
+	
+	if(currentStep<code.length){
+		prevStep = currentStep;
+		if(currentStep == 0){
+			document.getElementById('value_i').value = "";
+			currentStep++;
+		}
+		else if (currentStep == 1){
+			document.getElementById('value_i').value = turn;
+			currentStep++;
+		}
+		else if(currentStep == 2){
+				if(turn <= num){
+					currentStep++;
+				}
+				else{
+					currentStep+=2;
+				}
+			}
+		else if(currentStep == 3){
+			currentStep = 2;
+			turn++;
+		}
+		else{
+			currentStep++;
+		}
+		
+	}
+	if(currentStep == 5){
+			document.getElementById('value_i').value = "";
+	}
+	else{
+			document.getElementById('value_i').value = turn;
+	}
+	document.getElementById('value_sum').value = sum;
+}
+function start(spe){
+	tid = window.setInterval("callshow();",spe);
+	document.getElementById('autoButton').disabled = true;
+}
+
+function resettimer(){
+	window.clearInterval(tid);
+}
+
+function runALL(){
+	var num = parseInt(document.getElementById('code_number').value);
+	resettimer();
+	showStep(prevStep,-1);
+	document.getElementById('reloadButton').style = "display:inline-block;";
+	document.getElementById('nextButton').style = "display:none;";
+	document.getElementById('autoButton').style = "display:none;";
+	document.getElementById('runButton').style = "display:none;";
+	document.getElementById('text').value = "The sum value is: " + sum;
+	document.getElementById('value_i').value = "";
+	document.getElementById('value_sum').value = sum;
+}
+</script>
+<head>
+<script src="js/popper.min.js"></script>
+ <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>for迴圈null loop模擬</title> 
+	<!--Bootstrap 核心CSS 檔案-->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"> 
+	<!--自行定義css-->
+	<link rel="stylesheet" href="css/main2.css">
+	<!--** 請增加css檔：css/main.css -->
+	<link rel="stylesheet">
+	<!--jQuery 核心JavaScript 檔案-->
+	<script src="js/jquery-3.4.1.min.js"></script>
+	<!--Bootstrap 核心JavaScript 檔案-->
+	<script src="bootstrap/js/bootstrap.min.js"></script>	
+</head>
+<body align=center>
+<nav class="navbar navbar-expand-lg navbar-light" style="background:#5288ac">
+	  <a class="navbar-brand" href="#" style="color:white">for模擬</a>
+	  <button class="navbar-toggler border-light bg-light" type="button" 
+	          data-toggle="collapse" data-target="#navbarNavDropdown" 
+	          aria-controls="navbarNavDropdown" aria-expanded="false" 
+			  aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+		<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorForG.html" style="color:white">general loop</a>
+		  </li>		  
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorForNest.html" style="color:white">nested loop</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorForI.html" style="color:white">infinite loop</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorForC.html" style="color:white">loop+continue</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="simulatorForB.html" style="color:white">loop+break</a>
+		  </li>
+		  <li class="nav-item active">
+			<a class="nav-link" href="simulatorForN.html">null loop<span class="sr-only">(current)</span></a>
+		  </li>	
+		  <li class="nav-item">
+			<a class="nav-link" href="main.html" style="color:white">回首頁</a>
+		  </li>	
+		</ul>				
+	  </div>
+</nav>
+<div class="container pt-4">
+	<div class="row">
+
+	<div class="card col-12 col-sm-12 col-xl-4 pt-3 pb-4">
+		<div class = "card-header bg-basic text-center">
+			<h3>程式碼講解</h3>
+		</div>
+		<div class = "card-body">
+			<span id='declare_sum'>宣告一個整數變數為sum，並指派值為0<br></span>
+			<hr>for迴圈開始<hr>
+			<span id='step_one'>宣告一個local variable為i，並指派值為1</span><br>
+			<span id='step_two'>判斷i是否 &lt;= <span id='step_number'>??</span></span><br>
+			<span id='step_three'>將i的值指派為i加上1</span><br>
+			<hr>for迴圈結束<hr>
+			<span id='step_result'>輸出變數sum</span>
+		</div>
+	</div>	
+	<div class="card col-12 col-sm-12 col-xl-4 pt-3 pb-4" >
+		<div class = "card-header bg-basic text-center">
+			<h3>Code</h3>
+		</div>
+		<div class = "card-body">
+			<span id='code_sum'>int sum = 0;<br></span><br>
+			for(<span id='code_one'>int i = 1;</span>
+			<span id='code_two'>i &lt;= <input type=text style="width:60px;" id='code_number'>;</span> 
+			<span id='code_three'>i++</span>){<br>
+			}<br>
+			<span id='code_result'>System.out.println("The sum value is: " + sum);<br></span>
+			<hr>
+			追蹤變數<br>
+			i = <input type=text readonly="readonly"  id='value_i' style="width:100px;height:25px;">&nbsp;&nbsp;
+			sum = <input type=text readonly="readonly"  id='value_sum' style="width:100px;height:25px;">
+			<hr>
+			輸出視窗<br>
+			<input type=text readonly="readonly"  id='text' style="width:300px;height:50px;">
+		</div>
+	</div>
+	<div class="card col-12 col-sm-12 col-xl-4 pt-3 pb-4">
+		<div class = "card-header bg-basic text-center">
+			<h3>流程圖</h3>
+		</div>
+		<div class = "card-body">
+			<canvas id="cs1" width=500 height=400></canvas>
+		</div>
+	</div>
+</div>
+</div>
+<div align=center class="py-3">
+	<button type="button" class="btn btn-primary" onclick="processCode();" id='genButton'>產生</button>
+	<button type="button" class="btn btn-light" onclick="callshow();resettimer();document.getElementById('autoButton').disabled = false;" id='nextButton' disabled style = "display:none;">下一步</button>
+	<div class="dropdown" style="display:inline;">
+    <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" id='autoButton' disabled style = "display:none;">
+      自動播放
+    </button>
+    <div class="dropdown-menu">
+      <a class="dropdown-item" onclick="start(1500);" target="_blank">慢</a>
+      <a class="dropdown-item" onclick="start(1000);" target="_blank">正常</a>
+      <a class="dropdown-item" onclick="start(500);" target="_blank">快</a>
+    </div>
+   </div>
+	<button type="button" class="btn btn-light" onclick="runALL();" id='runButton' disabled style = "display:none;">全部執行</button>
+	<button type="button" class="btn btn-primary" onclick="javascript:window.location.reload()" id='reloadButton' style="display:none;">重置</button><br>
+	
+   </div>
+</div>
+ <div class="go-top">
+    <a href="#">返回<br>頂部</a>
+  </div>
+</body>
+</html>

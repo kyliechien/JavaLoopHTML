@@ -1,0 +1,230 @@
+<html>
+<script>
+var currentStep = -1;
+var codeStep = -1;
+var prevStep = -1;
+var i = 1;
+var sum = 0;
+var content = [ '首先來認識一下while的相關內容<br>標記黃色區域的是最常見的while的形式',
+				'你可以看到前面有個while<br>後面帶著一行括號，括號內部包含一些文字',
+				'在括號的後面跟著一個左大括號，在下面也有右大括號<br>在這兩個括號之間的區域，我們稱之為<b><u>body</u></b>，<br>是屬於這個while處理的範圍',
+				'在小括號中間的這一塊內容，稱為<b><u>執行條件</u></b>，<br>當這個<b><u>條件成立</u></b>的時候，這個while迴圈的body就會被執行，<br>沒有的話就不做<br>接下來示範跑過一次範例程式，這樣會更容易理解'
+				];
+var code = ['forAll',
+			'head',
+			'pb',
+			'cb',
+			'code_one',
+];				
+
+var codeAll = ['code_i_sum',
+				'code_one',
+				'code_two',
+				'code_three',
+				'code_one',
+				'code_two',
+				'code_three',
+				'code_one',
+				'code_two',
+				'code_three',
+				'code_one',
+				'code_result'];
+var step = ['step_i_sum',
+			'step_one',
+			'step_two',
+			'step_three',
+			'step_four',
+			'step_two',
+			'step_three',
+			'step_five',
+			'step_two',
+			'step_three',
+			'step_six',
+			'step_result'];
+			
+function runNext(){
+	if(currentStep < 3){
+		currentStep++;
+		document.getElementById('introduceBase').innerHTML = content[currentStep];
+		switch(currentStep){
+			case 0:
+				document.getElementById(code[currentStep]).style.background="#FCEA96";
+				break;
+			case 1:
+				document.getElementById(code[currentStep-1]).style.background="";
+				document.getElementById(code[currentStep]).style.background="#FCEA96";
+				document.getElementById(code[currentStep+1]).style.background="#FFD0D0";
+				break;
+			case 2:
+				document.getElementById(code[currentStep-1]).style.background="";
+				document.getElementById(code[currentStep]).style.background="";
+				document.getElementById(code[currentStep+1]).style.background="#FCEA96";
+				break;
+			case 3:
+				document.getElementById(code[currentStep]).style.background="";
+				document.getElementById(code[currentStep+1]).style.background="#FCEA96";
+				break;
+		}
+		
+	}
+	else{
+		document.getElementById(code[currentStep+1]).style.background="";
+		document.getElementById('introduceBase').style = "display:none;";
+		document.getElementById('introduceRun').style = "display:inline-block;";
+		if(codeStep==codeAll.length){
+			showStep(prevStep,-1);
+			document.getElementById('goButton').style = "display:inline-block;";
+			document.getElementById('nextButton').style = "display:none;";
+			document.getElementById('text').value = "The sum value is: " + sum;
+		}
+		else{
+			showStep(prevStep,codeStep);
+		}
+		
+		if(codeAll[codeStep] == "code_three"){
+			i++;
+		}
+		else if (codeAll[codeStep] == "code_two"){
+			sum += i;
+		}
+		
+		if(codeStep<codeAll.length){
+			prevStep = codeStep;
+			codeStep++;
+		}
+		document.getElementById('value_i').value = i;
+		document.getElementById('value_sum').value = sum;
+	}
+}
+function showStep(pre,curr){
+	if(pre != -1){
+		document.getElementById(step[pre]).style.background="";
+		document.getElementById(codeAll[pre]).style.background="";
+	}
+	if(curr!=-1){
+		document.getElementById(step[curr]).style.background="#FCEA96";
+		document.getElementById(codeAll[curr]).style.background="#FCEA96";
+	}
+	
+	
+}
+function start(){
+	document.getElementById('nextButton').style = "display:inline-block;";
+	document.getElementById('startButton').style = "display:none;";
+	
+	runNext();
+}
+</script>
+<head>
+<script src="js/popper.min.js"></script>
+ <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>while迴圈學習</title> 
+	<!--Bootstrap 核心CSS 檔案-->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"> 
+	<!--自行定義css-->
+	<link rel="stylesheet" href="css/main2.css">
+	<!--** 請增加css檔：css/main.css -->
+	<link rel="stylesheet">
+	<!--jQuery 核心JavaScript 檔案-->
+	<script src="js/jquery-3.4.1.min.js"></script>
+	<!--Bootstrap 核心JavaScript 檔案-->
+	<script src="bootstrap/js/bootstrap.min.js"></script>	
+</head>
+<body align=center>
+<nav class="navbar navbar-expand-lg navbar-light" style="background:#5288ac">
+	  <a class="navbar-brand" href="#" style="color:white">學習</a>
+	  <button class="navbar-toggler border-light bg-light" type="button" 
+	          data-toggle="collapse" data-target="#navbarNavDropdown" 
+	          aria-controls="navbarNavDropdown" aria-expanded="false" 
+			  aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+		<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+		  <li class="nav-item">
+			<a class="nav-link" href="studyFor.html" style="color:white">for</a>
+		  </li>
+		  <li class="nav-item  active">
+			<a class="nav-link" href="studyWhile.html" >while<span class="sr-only">(current)</span></a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="studyDoWhile.html" style="color:white">do while</a>
+		  </li>	
+		  <li class="nav-item">
+			<a class="nav-link" href="main.html" style="color:white">回首頁</a>
+		  </li>	
+		</ul>				
+	  </div>
+</nav>
+<div class="container pt-4">
+	<div class="row">
+
+	<div class="card col-12 col-sm-12 col-xl-6 pt-3 pb-4">
+		<div class = "card-header bg-basic text-center">
+			<h3>Code</h3>
+		</div>
+		<div class = "card-body">
+			<font size=4>
+			<span id='code_i_sum'>int sum = 0;<br>
+			int i = 1;</span><br>
+			<span id='forAll'>
+			<span id='head'>while</span><span id='pb'>(<span id='code_one'>i &lt;= 3</span>)</span>
+			<span id='cb'>{<br><br>
+			&nbsp;&nbsp;&nbsp;&nbsp;<span id='code_two'>sum += i;<br></span><br>
+			&nbsp;&nbsp;&nbsp;&nbsp;<span id='code_three'>i++;</span ><br>
+			}</span><br><br>
+			</span>
+			<span id='code_result'>System.out.println("The sum value is: " + sum);<br></span>
+			</font>
+			<hr>
+			追蹤變數<br>
+			i = <input type=text readonly="readonly"  id='value_i' style="width:100px;height:25px;">&nbsp;&nbsp;
+			sum = <input type=text readonly="readonly"  id='value_sum' style="width:100px;height:25px;">
+			<hr>
+			輸出視窗<br>
+			<input type=text readonly="readonly"  id='text' style="width:300px;height:50px;">
+		</div>
+	</div>	
+	<div class="card col-12 col-sm-12 col-xl-6 pt-3 pb-4" >
+		<div class = "card-header bg-basic text-center">
+			<h3>介紹</h3>
+		</div>
+		<div class = "card-body" align=center >
+		<font size=4>
+		
+			<span id='introduceBase'>
+			 點擊下方 開始介紹
+			</span>
+			<span id='introduceRun' style='display:none;'>
+			<span id='step_i_sum'>在while迴圈外面先宣告了兩個整數變數，叫做sum，使其等於0，另一個為i，值等於1</span><br>
+			<span id='step_one'>碰到while，<b><u>如果</u></b> i &lt;= 3 這條式子<b><u>成立</u></b>的話，</span><br>
+			<span id='step_two'>執行body的內容，sum += i  (也就是sum = sum + i)<br></span>
+			<span id='step_three'>i++ (相當於i = i + 1)，沒有其他code要做<br></span>
+			<span id='step_four'>再經由判斷式來決定是否要執行body，i現在是2，還是小於等於3，成立，執行body</span><br>
+			<span id='step_five'>再經由判斷式來決定是否要執行body，i現在是3，還是小於等於3，成立，執行body</span><br>
+			<span id='step_six'>再經由判斷式來決定是否要執行body，i現在是4，大於3，原式(i &lt;= 3)不成立，不執行body，離開while</span><br>
+			<span id='step_result'>最後印出sum的值，結束程式。</span>
+			</span>
+		</font>
+		</div>
+		<div class = "card-footer" align=center>
+			<button type="button" class="btn btn-primary" onclick="start();" id='startButton'>開始介紹</button>
+			<button type="button" class="btn btn-primary" onclick="runNext();" style = "display:none;" id='nextButton'>下一則</button>
+			<button type="button" class="btn btn-primary" onclick="location.href='simulatorWhileG.html'" style = "display:none;" id='goButton'>去模擬</button>
+		</div>
+	</div>
+	</div>
+</div>
+</div>
+<div align=center class="py-3">
+	
+	
+   </div>
+</div>
+ <div class="go-top">
+    <a href="#">返回<br>頂部</a>
+  </div>
+</body>
+</html>

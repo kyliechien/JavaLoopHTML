@@ -1,0 +1,432 @@
+<html>
+<script>
+var code_one = ['int i = 0;\nint number = 0;\ndo{\n	number += i;\n	i++;\n}while(i &lt;= ',
+				'int i = 10;\ndo{\n	if(i == ',
+				'int i = 10;\ndo{\n	if(i == ',
+				'int i = 0;\ndo{\n	\n}while(i &lt;= ',
+				'int i = 0;\nint j;\ndo{\n	j = 0;\n	do{\n		System.out.print(i);\n		j++;\n	}while(j &lt;= ',
+				'int i = 0;\nint number = 0;\ndo{\n	number += i;\n	i--;\n}while(i &lt;= '];
+
+var code_two = [');\nSystem.out.print(number);',
+				'){\n		i--;\n		continue;\n	}\n	System.out.print(i);\n	i--;\n}while(i &gt;= ',
+				'){\n		i--;\n		break;\n	}\n	System.out.print(i);\n	i--;\n}while(i &gt;= ',
+				');\nSystem.out.print(i);',
+				');\n	i++;\n}while(i &lt;= ',
+				');\nSystem.out.print(number);'];
+				
+var code_three = ['',
+				');',
+				');',
+				'',
+				');',
+				''];
+
+var record1 = ['type1','type2','type3','type4','type5','type6','type7','type8','type9','type10'];
+var record2 = ['times1','times2','times3','times4','times5','times6','times7','times8','times9','times10'];
+var record3 = ['cor1','cor2','cor3','cor4','cor5','cor6','cor7','cor8','cor9','cor10'];
+var Ques = ['general', 'continue','break', 'null' ,'nested','infinite'];
+
+
+var guessTimes = 0;
+var questionRecord = [0,0,0,0,0,0];
+var errorRecord = [0,0,0,0,0,0];
+var correctAns;
+var grade = 0;
+var quesNumber = 0;
+var type;
+var errorTimes;
+var showHint;
+var hintIndex;
+var timer;
+var throughTime = 0;
+var is_incorrect = true;
+function genQ(){
+		if(quesNumber >= 1){
+			tableRecord();
+		}
+		errorRecording();
+		initial();
+		type = Math.floor(Math.random() * 6); // 0=>general 1=>continue 2=>break 3=>null 4=>nested 5=>infinite
+		var number = Math.floor(Math.random() * 10);
+		var number2 = Math.floor(Math.random() * 10);
+		quesNumber++;
+		questionRecord[type]++;
+		//document.getElementById('line_two').innerHTML = type;
+		switch(type){
+			case 0:
+				correctAns = 0;
+				var sum = 0;
+				var i = 0;
+				document.getElementById('line_one').innerHTML = code_one[type] + number + code_two[type] + code_three[type];
+				do{
+					sum += i;
+					i++;
+				}while(i<=number);
+				correctAns = sum;
+				break;
+			case 1:
+				correctAns = "";
+				while(number > number2){
+				number2 = Math.floor(Math.random() * 10);
+				}
+				document.getElementById('line_one').innerHTML = code_one[type] + number2 + code_two[type] + number + code_three[type];
+				var i = 10;
+				do{
+					if(i == number2){
+						i--;
+						continue;
+					}
+					correctAns = correctAns + i;
+					i--;
+				}while(i>=number);
+				break;
+			case 2:
+				correctAns = "";
+				while(number > number2){
+				number2 = Math.floor(Math.random() * 10);
+				}
+				document.getElementById('line_one').innerHTML = code_one[type] + number2 + code_two[type] + number + code_three[type];
+				var i = 10;
+				do{
+					if(i == number2){
+						i--;
+						break;
+					}
+					correctAns = correctAns + i;
+					i--;
+				}while(i>=number);
+				break;
+			case 3:
+				document.getElementById('line_one').innerHTML = code_one[type] + number + code_two[type] + code_three[type];
+				correctAns = "無窮迴圈";
+				break;
+			case 4:
+				correctAns = "";
+				number = Math.floor(Math.random() * 5);
+				number2 = Math.floor(Math.random() * 3);
+				document.getElementById('line_one').innerHTML = code_one[type] + number2 + code_two[type] + number + code_three[type];
+				var i = 0;
+				var j;
+				do{
+					j = 0;
+					do{
+						correctAns = correctAns + i;
+						j++;
+					}while(j <= number2);
+					i++;
+				}while(i <= number);
+				break;
+			case 5:
+				correctAns = "無窮迴圈";
+				document.getElementById('line_one').innerHTML = code_one[type] + number + code_two[type] + code_three[type];
+				break;
+		}
+		//document.getElementById('t').innerHTML = type;
+		document.getElementById('userQues').innerHTML = quesNumber;
+		document.getElementById(record1[quesNumber-1]).innerHTML = Ques[type];
+	if(quesNumber==10){
+		document.getElementById('nextButton').style = "display:none;";
+		document.getElementById('finishButton').style = "display:inline-block;";
+	}
+	
+}
+
+
+function checkAns(){
+	var generalHint = ['number = number + i', '注意do while迴圈的特性（會先執行第一輪）和執行條件', '每一輪i = i + 1'];
+	var continueHint = ['注意do while迴圈的特性（會先執行第一輪）和執行條件', '每一輪i = i - 1' , '注意if的觸發條件，碰到continue代表直接進行下一次的迴圈'];
+	var breakHint = ['注意do while迴圈的特性（會先執行第一輪）和執行條件', '每一輪i = i - 1' , '注意if的觸發條件，碰到break代表為直接跳出迴圈'];
+	var nullHint = ['注意do while迴圈的特性（會先執行第一輪）和執行條件', '每一輪i = i + 1' , 'do while迴圈的body為空'];
+	var nestedHint = ['注意do while迴圈的特性（會先執行第一輪）和執行條件，每輪i = i + 1','注意do while迴圈的特性（會先執行第一輪）和執行條件，每輪j = j + 1','每輪輸出是外層目前的i']; 
+	var infiniteHint = ['注意do while的執行條件','每輪i = i - 1','System.out.print(number);會不會執行?'];
+	
+	guessTimes++;
+	
+	if(document.getElementById('userAns').value != "" && document.getElementById('userAns').value == correctAns){
+		document.getElementById('checkButton').disabled = true;
+		document.getElementById('photo').innerHTML = "<img src=" + "correct.png" + ">";
+		is_incorrect = false;
+		switch(errorTimes){
+			case 0:
+				grade += 10;
+				break;
+			case 1:
+				grade += 8;
+				break;
+			case 2:
+				grade += 6;
+				break;
+			case 3:
+				grade += 4;
+				break;
+			case 4:
+				grade += 2;
+				break;
+			default:
+				break;
+		}
+	
+		
+	}else{
+		hintIndex = (hintIndex < 2) ? hintIndex + 1 : 3;
+		errorTimes++;
+		document.getElementById('photo').innerHTML = "<img src=" + "incorrect.png" + ">";
+		switch(type){
+			case 0:
+				showHint = (hintIndex < 3) ? showHint + "<br>" + generalHint[hintIndex] : showHint;
+				break;
+			case 1:
+				showHint = (hintIndex < 3) ? showHint + "<br>" + continueHint[hintIndex] : showHint;
+				break;
+			case 2:
+				showHint = (hintIndex < 3) ? showHint + "<br>" + breakHint[hintIndex] : showHint;
+				break;
+			case 3:
+				showHint = (hintIndex < 3) ? showHint + "<br>" + nullHint[hintIndex] : showHint;
+				break;
+			case 4:
+				showHint = (hintIndex < 3) ? showHint + "<br>" + nestedHint[hintIndex] : showHint;
+				break;
+			case 5:
+				showHint = (hintIndex < 3) ? showHint + "<br>" + infiniteHint[hintIndex] : showHint;
+				break;
+		}
+		document.getElementById('hint').innerHTML = showHint;
+	}
+	document.getElementById('userGrade').innerHTML = grade;
+}
+function errorRecording(){
+		if(is_incorrect){
+			errorRecord[type]++;
+		}
+}
+function initial(){
+	errorTimes = 0;
+	hintIndex = -1;
+	showHint = "";
+	guessTimes = 0;
+	is_incorrect = true;
+	document.getElementById('hint').innerHTML = "";
+	document.getElementById('userAns').value = "";
+	document.getElementById('checkButton').disabled = false;
+	document.getElementById('photo').innerHTML = "";
+}
+
+function fireTimer(){
+	timer = setInterval(calTime,1000);
+}
+
+function calTime(){
+	throughTime++;
+	document.getElementById('userGuessTime').innerHTML = throughTime;
+}
+
+function stopTimer(){
+	clearInterval(timer);
+}
+
+function start(){
+	genQ();
+	fireTimer();
+	document.getElementById('checkButton').disabled = false;
+	document.getElementById('nextButton').disabled = false;
+	document.getElementById('userAns').disabled = false;
+}
+function finish(){
+	stopTimer();
+	document.getElementById('checkButton').disabled = true;
+	document.getElementById('nextButton').disabled = true;
+	document.getElementById('userAns').disabled = true;
+	document.getElementById('newTurnButton').style = "display:inline-block;";
+	document.getElementById('total').style = "display:inline";
+	document.getElementById('checkButton').style = "display:none;";
+	document.getElementById('finishButton').style = "display:none;";
+	document.getElementById('line_one').innerHTML = "總分："+grade+"分<br>"+"總作答時間："+throughTime+"秒<br>"+"<hr>"+"題型／出題次數／錯誤次數（一題只算一次）"+
+	"<br>"+"general->"+questionRecord[0]+"/"+errorRecord[0]+"<br>"+"continue->"+questionRecord[1]+"/"+errorRecord[1]+"<br>"+"break->"+questionRecord[2]+"/"+errorRecord[2]+"<br>"+
+	"null->"+questionRecord[3]+"/"+errorRecord[3]+"<br>"+"nested->"+questionRecord[4]+"/"+errorRecord[4]+"<br>"+"infinite->"+questionRecord[5]+"/"+errorRecord[5];
+}
+function tableRecord(){
+	
+	if(is_incorrect){
+		document.getElementById(record3[quesNumber-1]).innerHTML = "否";
+	}
+	else{
+		document.getElementById(record3[quesNumber-1]).innerHTML = "是";
+	}
+	document.getElementById(record2[quesNumber-1]).innerHTML = guessTimes;
+}
+</script>
+<head>
+ <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>challengeDoWhile</title> 
+	<!--Bootstrap 核心CSS 檔案-->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"> 
+	<!--自行定義css-->
+	<link rel="stylesheet" href="css/main2.css">
+	<!--** 請增加css檔：css/main.css -->
+	<link rel="stylesheet">
+	<!--jQuery 核心JavaScript 檔案-->
+	<script src="js/jquery-3.4.1.min.js"></script>
+	<!--Bootstrap 核心JavaScript 檔案-->
+	<script src="bootstrap/js/bootstrap.min.js"></script>	
+</head>
+<body align=center>
+<nav class="navbar navbar-expand-lg navbar-light" style="background:#5288ac">
+	  <a class="navbar-brand" href="#" style="color:white">挑戰</a>
+	  <button class="navbar-toggler border-light bg-light" type="button" 
+	          data-toggle="collapse" data-target="#navbarNavDropdown" 
+	          aria-controls="navbarNavDropdown" aria-expanded="false" 
+			  aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+		<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+		  <li class="nav-item">
+			<a class="nav-link" href="challengeFor.html" style="color:white">for</a>
+		  </li>
+		  <li class="nav-item ">
+			<a class="nav-link" href="challengeWhile.html" style="color:white">while</a>
+		  </li>
+		  <li class="nav-item active">
+			<a class="nav-link" href="challengeDoWhile.html" >do while<span class="sr-only">(current)</span></a>
+		  </li>	
+		  <li class="nav-item">
+			<a class="nav-link" href="main.html" style="color:white">回首頁</a>
+		  </li>	
+		</ul>				
+	  </div>
+</nav>
+<div class="container pt-5">
+<table border=1 height=400 align=center><tr height=50 ><td width=350 style="text-align:left;padding:10px;" rowspan=3><pre><font size=4>
+<span id='line_one'>按下按鈕<button onclick='start();'>產生</button>題目並開始計時</span></font>
+</pre></td>
+<td align=center width=500 height=50>
+目前分數：<span id='userGrade'>0</span>
+&nbsp;目前作答題數：<span id='userQues'></span>
+&nbsp;目前作答時間：<span id='userGuessTime'>0</span>秒
+</td></tr>
+<tr align=center><td height=200>
+請回答問題：左方程式輸出的內容為<br>（若為無限執行請填寫「無窮迴圈」）<br><br>
+<input type=text id='userAns' style="text-align:center;" disabled=true><span id='photo'></span><br><br>
+<button id = 'checkButton' onclick='checkAns();' disabled=true>核對</button>&nbsp;&nbsp;<button onclick='genQ();' id = 'nextButton' disabled=true>下一題</button><button onclick='errorRecording();finish();tableRecord();'  style = "display:none;" id = 'finishButton'>結束作答</button>
+<button onclick="javascript:window.location.reload()"  style = "display:none;" id = 'newTurnButton'>開啟新的一輪</button>
+</td></tr>
+<tr align=center><td>提示<b><span id='hint'></span></b></td></tr>
+</table>
+<span id='t'></span>
+<hr>
+<div align=center class="pb-3">
+<a class="btn btn-primary" href="#" role="button"
+			      data-toggle="modal" data-target="#myModal01">測驗介紹</a>
+ <div class="modal fade" id="myModal01" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">              
+              <h3 class="modal-title">do while測驗介紹</h3>
+			  <button class="close" type="button" data-dismiss="modal"><span>&times;</span></button>
+            </div>			
+            <div class="modal-body">
+			  <p class="text-left">
+				<h4>作答畫面</h4>
+				左邊是題目，右邊是作答區，請追蹤程式執行的結果，輸入至文字欄中並點選核對。<br>
+				如果沒有按核對，無論你輸入的答案是否正確，系統將自動判定為「未作答」，還請特別注意。
+				<hr>
+				<h4>分數計算</h4>
+				每一輪共十題，每一題會因你作答次數、正確與否來判定你該題的分數<br>
+				在第幾次作答正確／分數<br>
+				1 / 10<br>
+				2 / 8<br>
+				3 / 6<br>
+				4 / 4<br>
+				5 / 2<br>
+				超過5次或未作答 / 0<br>
+				<hr><h4>提示</h4>
+				每一題會有三種提示，會依據錯誤次數循序出現。
+				<hr><h4>統計</h4>
+				作答結束後，畫面會出現統計資料，下方會有每一題的題型，可依據這些資料來分析你是否熟悉相關概念。
+			  </p>
+            </div>			
+          </div>
+        </div>
+      </div>
+</div>
+<span id='total' style = "display:none;">
+<table class="table table-striped table-hover"  >
+			<thead>
+			  <tr>
+				<th>題號</th>
+				<th>類型</th> 
+				<th>實際作答次數</th>
+				<th>正確?</th>
+			  </tr>
+			</thead>		
+			<tbody>
+			  <tr>
+				<td>01</td>
+				<td id='type1'></td>
+				<td id='times1'></td>
+				<td id='cor1'></td>
+			  </tr>
+				 <tr>
+				<td>02</td>
+				<td id='type2'></td>
+				<td id='times2'></td>
+				<td id='cor2'></td>
+			  </tr>	
+			  <tr>
+				<td>03</td>
+				<td id='type3'></td>
+				<td id='times3'></td>
+				<td id='cor3'></td>
+			  </tr>
+			  <tr>
+				<td>04</td>
+				<td id='type4'></td>
+				<td id='times4'></td>
+				<td id='cor4'></td>
+			  </tr>
+			  <tr>
+				<td>05</td>
+				<td id='type5'></td>
+				<td id='times5'></td>
+				<td id='cor5'></td>
+			  </tr>
+			  <tr>
+				<td>06</td>
+				<td id='type6'></td>
+				<td id='times6'></td>
+				<td id='cor6'></td>
+			  </tr>
+			  <tr>
+				<td>07</td>
+				<td id='type7'></td>
+				<td id='times7'></td>
+				<td id='cor7'></td>
+			  </tr>
+			  <tr>
+				<td>08</td>
+				<td id='type8'></td>
+				<td id='times8'></td>
+				<td id='cor8'></td>
+			  </tr>
+			  <tr>
+				<td>09</td>
+				<td id='type9'></td>
+				<td id='times9'></td>
+				<td id='cor9'></td>
+			  </tr>
+			  <tr>
+				<td>10</td>
+				<td id='type10'></td>
+				<td id='times10'></td>
+				<td id='cor10'></td>
+			  </tr>
+			</tbody>
+			
+		</table>
+	</span>
+</div>
+</body>
+</html>
